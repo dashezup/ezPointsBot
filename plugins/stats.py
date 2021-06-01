@@ -15,24 +15,26 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-# import logging
+from pyrogram import Client, filters, emoji
+from pyrogram.types import Message
 
-from pyrogram import Client
+from utils.db import get_stats
 
-from data import conn
 
-plugins = dict(
-    root="plugins",
-    include=[
-        "start",
-        "vote",
-        "points",
-        "stats"
+@Client.on_message(filters.private
+                   & filters.incoming
+                   & filters.text
+                   & ~filters.edited
+                   & filters.regex(r'^/stats$'))
+async def command_stats(_, m: Message):
+    db_results = await get_stats()
+    (points_group,), (points_user,), (users_user,) = [
+        [int(x) for x in i]
+        for i in db_results
     ]
-)
-
-# logging.basicConfig(level=logging.DEBUG)
-print('>>> BOT STARTED')
-Client("ezPointsBot", plugins=plugins).run()
-conn.close()
-print('\n>>> BOT STOPPED')
+    await m.reply_text(
+        f"{emoji.BAR_CHART} **Database Statistics for @ezPointsBot**:\n\n"
+        f"\u2022 {points_group = }\n"
+        f"\u2022 {points_user = }\n"
+        f"\u2022 {users_user = }"
+    )

@@ -15,7 +15,7 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-from typing import Optional
+from typing import Optional, List, Tuple
 
 from pyrogram.types import User
 
@@ -35,6 +35,11 @@ VALUES (?, ?, ?)"""
 SQL_UPDATE_USER = """INSERT INTO users (user_id, first_name, last_name)
 VALUES (?, ?, ?)
 ON DUPLICATE KEY UPDATE first_name=first_name, last_name=last_name"""
+SQL_GET_STATS = """(SELECT CAST(COUNT(DISTINCT group_id) AS CHAR) FROM points)
+UNION ALL
+(SELECT CAST(COUNT(DISTINCT user_id) AS CHAR) FROM points)
+UNION ALL
+(SELECT CAST(COUNT(DISTINCT user_id) AS CHAR) FROM users)"""
 
 
 async def get_user_points(chat_id: int, user_id: int) -> Optional[str]:
@@ -72,3 +77,8 @@ async def update_user(u: User):
     sql_data = (u.id, u.first_name, u.last_name)
     cur.execute(SQL_UPDATE_USER, sql_data)
     conn.commit()
+
+
+async def get_stats() -> List[Tuple]:
+    cur.execute(SQL_GET_STATS)
+    return cur.fetchall()
