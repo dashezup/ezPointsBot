@@ -32,6 +32,7 @@ try:
         port=DB_PORT,
         database="ezpoints"
     )
+    conn.auto_reconnect = True
 except mariadb.Error as e:
     print(f"Error connecting to MariaDB: {e}")
     sys.exit(1)
@@ -49,3 +50,5 @@ cur.execute("""CREATE TABLE IF NOT EXISTS points (
     points bigint SIGNED NOT NULL,
     UNIQUE (group_id, user_id)
 )""")
+
+conn.commit()
