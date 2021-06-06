@@ -4,7 +4,7 @@ Telegram Bot for upvote and downvote messages
 
 ### Usage
 
-- [Add @ezPointsBot to your groups](https://t.me/ezPointsBot?startgroup=) to
+- [add @ezPointsBot to your groups](https://t.me/ezPointsBot?startgroup=_) to
   use it
 - `+|-` (as a reply) upvote/downvote
 - `++|-- [reason]` (as a reply) upvote/downvote with reasons specified
