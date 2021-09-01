@@ -16,6 +16,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 from pyrogram import Client, filters
+from pyrogram.errors import ChatWriteForbidden
 from pyrogram.types import Message
 
 from utils.db import get_user_points, insert_user, change_point
@@ -47,6 +48,9 @@ async def vote(_, m: Message):
     await insert_user(user)
     cp = await get_user_points(chat_id, user_id)
     action_name = "Upvoted" if action_sign == '+' else "Downvoted"
-    await m.reply_text(
-        f"{action_name}, current points for {user.mention}: **{cp}**"
-    )
+    try:
+        await m.reply_text(
+            f"{action_name}, current points for {user.mention}: **{cp}**"
+        )
+    except ChatWriteForbidden:
+        await m.chat.leave()

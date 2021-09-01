@@ -16,6 +16,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 from pyrogram import Client, filters
+from pyrogram.errors import ChatWriteForbidden
 from pyrogram.types import Message
 
 from utils.db import get_user_points, query_top_points, update_user
@@ -36,7 +37,10 @@ async def command_points(_, m: Message):
         await update_user(x)
     else:
         response = await get_group_points(m.chat.id)
-    await m.reply_text(f"{response}")
+    try:
+        await m.reply_text(f"{response}")
+    except ChatWriteForbidden:
+        await m.chat.leave()
 
 
 async def get_group_points(chat_id: int) -> str:
